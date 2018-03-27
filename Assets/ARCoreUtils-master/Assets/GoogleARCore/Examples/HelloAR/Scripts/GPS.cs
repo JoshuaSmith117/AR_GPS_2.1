@@ -16,7 +16,6 @@ public class GPS : MonoBehaviour
     {
             AndroidPermissionsManager.RequestPermission("android.permission.ACCESS_FINE_LOCATION");
             Instance = this;
-            //DontDestroyOnLoad(gameObject);
             StartCoroutine(StartLocationService());
     }
 
@@ -51,17 +50,18 @@ public class GPS : MonoBehaviour
                 Debug.Log("Unable to determine device location");
                 yield break;
             }
-
-            latitude = Input.location.lastData.latitude;
-            longitude = Input.location.lastData.longitude;
-
-            inAssemblyHall = false;
-
-            if (latitude >= 39.180313f && latitude <= 39.181455f && longitude >= -86.523000f && longitude <= -86.521439f)
-            {
-                inAssemblyHall = true;
-            }
-                yield break;
         }
     }
+    public void Update() {
+        latitude = Input.location.lastData.latitude;
+        longitude = Input.location.lastData.longitude;
+
+        inAssemblyHall = false;
+
+        if (latitude >= 39.180313f && latitude <= 39.181455f && longitude >= -86.523000f && longitude <= -86.521439f)
+        {
+            inAssemblyHall = true;
+        }
+    }
+
 }

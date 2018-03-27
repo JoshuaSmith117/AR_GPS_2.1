@@ -29,6 +29,9 @@ public class UpdateGPSText : MonoBehaviour
         if (GPS.Instance.inAssemblyHall == true)
         {
             location.text = "Assembly Hall";
+        } else
+        {
+            location.text = "Unknown";
         }
     }
 }

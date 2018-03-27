@@ -238,35 +238,36 @@ namespace GoogleARCore.HelloAR
             //////////////////////////////////////////////////////////////////////////////////////
 
             // Disable the snackbar UI when no planes are valid.
-            Frame.GetPlanes(m_AllPlanes);
-            searchingForSurfaces = true;
-            for (int i = 0; i < m_AllPlanes.Count; i++)
+            if (GPS.Instance.inAssemblyHall == true)
             {
-                if (m_AllPlanes[i].TrackingState == TrackingState.Tracking)
+                Frame.GetPlanes(m_AllPlanes);
+                searchingForSurfaces = true;
+                for (int i = 0; i < m_AllPlanes.Count; i++)
                 {
-                    searchingForSurfaces = false;
-                    snackBar.SetActive(false);
-                    radar.SetActive(false);
-                    Instruction.enabled = false;
-                    if (hasBegun == true && goals.Length <= 0) {
-                        snackBar.SetActive(true);
-                        TipText.text = "Waiting for goal to be placed...";
-                    }
-                    if (GPS.Instance.inAssemblyHall == true)
+                    if (m_AllPlanes[i].TrackingState == TrackingState.Tracking)
                     {
+                        searchingForSurfaces = false;
+                        snackBar.SetActive(false);
+                        radar.SetActive(false);
+                        Instruction.enabled = false;
+                        if (hasBegun == true && goals.Length <= 0)
+                        {
+                            snackBar.SetActive(true);
+                            TipText.text = "Waiting for goal to be placed...";
+                        }
                         menuBBall.SetActive(true);
+                        break;
                     }
-                    break;
-                }
-                else {
-                    searchingForSurfaces = true;
-                    snackBar.SetActive(true);
-                    TipText.text = "Searching for surfaces...";
-                    radar.SetActive(true);
-                    break;
+                    else
+                    {
+                        searchingForSurfaces = true;
+                        snackBar.SetActive(true);
+                        TipText.text = "Searching for surfaces...";
+                        radar.SetActive(true);
+                        break;
+                    }
                 }
             }
-
             //If player is in Assembly Hall...
             if (GPS.Instance.inAssemblyHall == true)
             {
@@ -477,7 +478,7 @@ namespace GoogleARCore.HelloAR
         public void Reset()
         {
             DontDestroyOnLoad(Camera.main);
-            SceneManager.LoadScene("AR_GPS_2.0");
+            SceneManager.LoadScene("AR_GPS_2.1");
         }
 
         /// Show an Android toast message.

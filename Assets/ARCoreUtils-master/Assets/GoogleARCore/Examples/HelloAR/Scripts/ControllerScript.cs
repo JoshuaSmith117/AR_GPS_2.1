@@ -36,6 +36,7 @@ namespace GoogleARCore.HelloAR
         public Text highscoreText;
         public Text beginHighscoreText;
         public Text scoreText;
+        public Text gameMode;
 
         private Text Timer;
 
@@ -47,7 +48,8 @@ namespace GoogleARCore.HelloAR
         public bool isPlaying = false;
         public bool isPaused = false;
         public bool gameOver = false;
-        public bool hasBegun = false;
+        public bool SChasBegun = false;
+        public bool FThasBegun = false;
         public bool searchingForSurfaces = true;
         public bool flickControls;
 
@@ -117,7 +119,7 @@ namespace GoogleARCore.HelloAR
         {
             basketballs = GameObject.FindGameObjectsWithTag("basketball");
             goals = GameObject.FindGameObjectsWithTag("goal");
-            if (hasBegun == false)
+            if (SChasBegun == false && FThasBegun == false)
             {
                 if (searchingForSurfaces == true)
                 {
@@ -128,7 +130,7 @@ namespace GoogleARCore.HelloAR
                 }
             }
             // If the player has pressed the "Shoot some hoops" button...
-            else if (hasBegun == true)
+            else if (SChasBegun == true || FThasBegun == true)
             {
                 //If the player still needs to find a surface...
                 if (searchingForSurfaces == true)
@@ -156,17 +158,18 @@ namespace GoogleARCore.HelloAR
 
             if (isPlaying == true && isGoalPlaced == true)
             {
-                timeLeft -= Time.deltaTime;
-                if (flickControls == true) {
-                    if (basketballs.Length <= 10 && readytospawn == true)
-                    {
-                        var basketballObject = Instantiate(BasketballPrefab, Camera.main.transform.position - new Vector3(0, .3f, 0) + Camera.main.transform.forward * .5f, Camera.main.transform.rotation);
-                        basketballObject.transform.parent = Camera.main.transform;
-                        ballinhand = true;
-                        readytospawn = false;
-                        Debug.Log("Ball Spawned");
-                        StartCoroutine(spawntimer());
-                    }
+                if (SChasBegun == true)
+                {
+                    timeLeft -= Time.deltaTime;
+                }
+                if (basketballs.Length <= 10 && readytospawn == true)
+                {
+                    var basketballObject = Instantiate(BasketballPrefab, Camera.main.transform.position - new Vector3(0, .3f, 0) + Camera.main.transform.forward * .5f, Camera.main.transform.rotation);
+                    basketballObject.transform.parent = Camera.main.transform;
+                    ballinhand = true;
+                    readytospawn = false;
+                    Debug.Log("Ball Spawned");
+                    StartCoroutine(spawntimer());
                 }
 
                 if (Mathf.Round(timeLeft) >= 10)
@@ -178,7 +181,7 @@ namespace GoogleARCore.HelloAR
                     Timer.text = "0" + Mathf.Round(timeLeft).ToString();
                 }
 
-                if (timeLeft <= 0 && gameOver == false)
+                if (SChasBegun == true && timeLeft <= 0 && gameOver == false)
                 {
                     IEnumerator coroutine = GameOver();
                     StartCoroutine(coroutine);
@@ -250,10 +253,12 @@ namespace GoogleARCore.HelloAR
                         snackBar.SetActive(false);
                         radar.SetActive(false);
                         Instruction.enabled = false;
-                        if (hasBegun == true && goals.Length <= 0)
+                        if (SChasBegun == true && goals.Length <= 0 || FThasBegun == true && goals.Length <= 0)
                         {
                             snackBar.SetActive(true);
                             TipText.text = "Waiting for goal to be placed...";
+                            Instruction.enabled = true;
+                            Instruction.text = "Tap the grid to place a goal.";
                         }
                         menuBBall.SetActive(true);
                         break;
@@ -290,7 +295,33 @@ namespace GoogleARCore.HelloAR
                     {
 
                         // If the player has pressed "Shoot some Hoops button, but still needs to place a goal...
-                        if (isGoalPlaced == false && hasBegun == true)
+                        if (isGoalPlaced == false && SChasBegun == true)
+                        {
+                            //Spawn a basketball goal.
+                            var basketballGoalObject = Instantiate(BasketballGoalPrefab, hit.Pose.position, hit.Pose.rotation);
+                            startMenu.SetActive(true);
+
+                            // Create an anchor.
+                            var anchor = hit.Trackable.CreateAnchor(hit.Pose);
+
+                            // BasketballGoal should be flush with the plane.
+                            basketballGoalObject.transform.rotation = Quaternion.Euler(0.0f,
+                            basketballGoalObject.transform.rotation.eulerAngles.y - 180, basketballGoalObject.transform.rotation.z);
+
+                            // Make basketballGoal model a child of the anchor.
+                            basketballGoalObject.transform.parent = anchor.transform;
+                            Debug.Log("Goal has been placed.");
+
+                            //Reference scoreHandler script.
+                            BBallscoreHandler = FindObjectOfType<BBallScoreHandler>();
+
+                            //Reference Timer
+                            Timer = basketballGoalObject.GetComponentInChildren<Text>();
+                            scoreCanvas = GameObject.FindGameObjectWithTag("score");
+                            scoreAnimator = scoreCanvas.GetComponent<Animator>();
+                            backboardLight = GameObject.FindGameObjectWithTag("backboardlight");
+                        }
+                        else if (isGoalPlaced == false && FThasBegun == true)
                         {
                             //Spawn a basketball goal.
                             var basketballGoalObject = Instantiate(BasketballGoalPrefab, hit.Pose.position, hit.Pose.rotation);
@@ -358,15 +389,40 @@ namespace GoogleARCore.HelloAR
             readytospawn = true;
         }
 
-        public void Begin()
+        public void ShotClock()
         {
-            hasBegun = true;
+            SChasBegun = true;
             beginHighscoreText.text = "Highscore: " + highscore;
+            gameMode.text = "Shot Clock";
+        }
+
+        public void FreeThrow()
+        {
+            FThasBegun = true;
+            gameMode.text = "Free Throw";
         }
 
         public void PlayGame()
         {
-            StartCoroutine(countdownTimer());
+            if (SChasBegun == true)
+            {
+                StartCoroutine(countdownTimer());
+            }
+            else if (FThasBegun == true) {
+                countdownText.enabled = false;
+                isPlaying = true;
+                BBallscoreHandler.score = 0;
+                gameOver = false;
+                startMenu.SetActive(false);
+                gameOverMenu.SetActive(false);
+                backboardLight.SetActive(false);
+                pauseMenu.SetActive(false);
+                gui.SetActive(true);
+                scoreAnimator.SetTrigger("beginPlay");
+                Timer.enabled = true;
+                Timer.text = "00";
+                readytospawn = true;
+            }
         }
 
         public void Continue()
@@ -382,8 +438,16 @@ namespace GoogleARCore.HelloAR
             isPaused = true;
             gui.SetActive(false);
             pauseMenu.SetActive(true);
-            highscoreText.text = "Highscore: " + highscore;
+            
             Time.timeScale = 0;
+            if (SChasBegun == true)
+            {
+                highscoreText.text = "Highscore: " + highscore;
+            }
+            else if (FThasBegun == true)
+            {
+                highscoreText.text = null;
+            }
         }
 
         IEnumerator GameOver()
@@ -410,7 +474,8 @@ namespace GoogleARCore.HelloAR
         
         public void MainMenu()
         {
-            hasBegun = false;
+            FThasBegun = false;
+            SChasBegun = false;
             isPlaying = false;
             isPaused = false;
             gameOver = false;

@@ -300,6 +300,7 @@ namespace GoogleARCore.HelloAR
                             //Spawn a basketball goal.
                             var basketballGoalObject = Instantiate(BasketballGoalPrefab, hit.Pose.position, hit.Pose.rotation);
                             startMenu.SetActive(true);
+                            BBallscoreHandler.score = 0;
 
                             // Create an anchor.
                             var anchor = hit.Trackable.CreateAnchor(hit.Pose);
@@ -474,6 +475,7 @@ namespace GoogleARCore.HelloAR
         
         public void MainMenu()
         {
+            BBallscoreHandler.score = 0;
             FThasBegun = false;
             SChasBegun = false;
             isPlaying = false;

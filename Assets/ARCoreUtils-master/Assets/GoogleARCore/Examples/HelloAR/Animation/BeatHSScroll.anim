@@ -26,7 +26,7 @@ AnimationClip:
         outSlope: 741.8701
         tangentMode: 0
       - serializedVersion: 2
-        time: 5
+        time: 6.016667
         value: 1095
         inSlope: 746.9182
         outSlope: 746.9182
@@ -59,7 +59,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 5
+    m_StopTime: 6.016667
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 2.6
@@ -85,7 +85,7 @@ AnimationClip:
         outSlope: 741.8701
         tangentMode: 0
       - serializedVersion: 2
-        time: 5
+        time: 6.016667
         value: 1095
         inSlope: 746.9182
         outSlope: 746.9182

@@ -213,8 +213,8 @@ namespace GoogleARCore.HelloAR
             }
 
             _QuitOnConnectionErrors();
-
             // Check that motion tracking is tracking.
+
             if (Frame.TrackingState != TrackingState.Tracking)
             {
                 const int lostTrackingSleepTimeout = 15;
@@ -300,7 +300,6 @@ namespace GoogleARCore.HelloAR
                             //Spawn a basketball goal.
                             var basketballGoalObject = Instantiate(BasketballGoalPrefab, hit.Pose.position, hit.Pose.rotation);
                             startMenu.SetActive(true);
-                            BBallscoreHandler.score = 0;
 
                             // Create an anchor.
                             var anchor = hit.Trackable.CreateAnchor(hit.Pose);
@@ -393,7 +392,7 @@ namespace GoogleARCore.HelloAR
         public void ShotClock()
         {
             SChasBegun = true;
-            beginHighscoreText.text = "Highscore: " + highscore;
+            beginHighscoreText.text = highscore.ToString();
             gameMode.text = "Shot Clock";
         }
 
@@ -465,7 +464,7 @@ namespace GoogleARCore.HelloAR
             pauseMenu.SetActive(false);
             gameOverMenu.SetActive(true);
             StoreHighscore();
-            scoreText.text = "Score: " + BBallscoreHandler.score;
+            scoreText.text = BBallscoreHandler.score.ToString();
             highscoreText.text = "Highscore: " + highscore;
             foreach (GameObject ball in basketballs)
             {

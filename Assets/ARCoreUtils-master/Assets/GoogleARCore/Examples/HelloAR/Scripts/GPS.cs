@@ -11,6 +11,7 @@ public class GPS : MonoBehaviour
     public float latitude;
     public float longitude;
     public bool inAssemblyHall;
+    public bool inMemorialStadium;
 
     private void Start()
     {
@@ -61,6 +62,10 @@ public class GPS : MonoBehaviour
         if (latitude >= 39.180313f && latitude <= 39.181455f && longitude >= -86.523000f && longitude <= -86.521439f)
         {
             inAssemblyHall = true;
+        }
+        else if (latitude >= 39.179150f && latitude <= 39.182659f && longitude >= -86.527511f && longitude <= -86.523799f)
+        {
+            inMemorialStadium = true;
         }
     }
 

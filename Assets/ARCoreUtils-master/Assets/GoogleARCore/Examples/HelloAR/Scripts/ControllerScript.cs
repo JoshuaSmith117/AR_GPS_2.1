@@ -37,6 +37,9 @@ namespace GoogleARCore.HelloAR
         public Text beginHighscoreText;
         public Text scoreText;
         public Text gameMode;
+        public Text banter;
+        public Text playAgain;
+        public Text description;
 
         private Text Timer;
 
@@ -71,6 +74,9 @@ namespace GoogleARCore.HelloAR
         public GameObject pauseMenu;
         public GameObject snackBar;
         private GameObject backboardLight;
+        public GameObject HSPanel;
+        public GameObject newHSPanel;
+
 
         public Text countdownText;
 
@@ -113,6 +119,9 @@ namespace GoogleARCore.HelloAR
         {
             highscore = PlayerPrefs.GetInt("highscore", 0);
             menuBBall.SetActive(false);
+            highscore = 0;
+            PlayerPrefs.SetInt("highscore", highscore);
+            PlayerPrefs.Save();
         }
 
         public void Update()
@@ -241,7 +250,7 @@ namespace GoogleARCore.HelloAR
             //////////////////////////////////////////////////////////////////////////////////////
 
             // Disable the snackbar UI when no planes are valid.
-            if (GPS.Instance.inAssemblyHall == true)
+            if (GPS.Instance.inAssemblyHall == true || GPS.Instance.inMemorialStadium == true)
             {
                 Frame.GetPlanes(m_AllPlanes);
                 searchingForSurfaces = true;
@@ -274,7 +283,7 @@ namespace GoogleARCore.HelloAR
                 }
             }
             //If player is in Assembly Hall...
-            if (GPS.Instance.inAssemblyHall == true)
+            if (GPS.Instance.inAssemblyHall == true || GPS.Instance.inMemorialStadium == true)
             {
                 //Keeps the basketBall count no greater than 6
                 if (basketballs.Length <= 5)
@@ -392,6 +401,8 @@ namespace GoogleARCore.HelloAR
         public void ShotClock()
         {
             SChasBegun = true;
+            HSPanel.SetActive(true);
+            description.text = "Beat your higschore in 60 seconds.";
             beginHighscoreText.text = highscore.ToString();
             gameMode.text = "Shot Clock";
         }
@@ -399,6 +410,8 @@ namespace GoogleARCore.HelloAR
         public void FreeThrow()
         {
             FThasBegun = true;
+            HSPanel.SetActive(false);
+            description.text = "No time limit. Practice makes perfect.";
             gameMode.text = "Free Throw";
         }
 
@@ -463,9 +476,68 @@ namespace GoogleARCore.HelloAR
             gui.SetActive(false);
             pauseMenu.SetActive(false);
             gameOverMenu.SetActive(true);
+            if (BBallscoreHandler.score < highscore)
+            {
+                playAgain.text = "Not quite... Try Again!";
+                newHSPanel.SetActive(false);
+            }
+            else if (BBallscoreHandler.score == highscore)
+            {
+                playAgain.text = "So close! You'll get it next time!";
+                newHSPanel.SetActive(false);
+            }
+            else if (BBallscoreHandler.score >= highscore)
+            {
+                playAgain.text = "Congratulations! Keep going!";
+                newHSPanel.SetActive(true);
+            }
             StoreHighscore();
             scoreText.text = BBallscoreHandler.score.ToString();
-            highscoreText.text = "Highscore: " + highscore;
+            highscoreText.text = highscore.ToString();
+            if (BBallscoreHandler.score < 10)
+            {
+                banter.text = "That was hard to watch!";
+            }
+            else if (BBallscoreHandler.score >= 10 && BBallscoreHandler.score < 20)
+            {
+                banter.text = "Come on! You can do better than that!";
+            }
+            else if (BBallscoreHandler.score >= 20 && BBallscoreHandler.score < 30)
+            {
+                banter.text = "Alright, you're gettin' there!";
+            }
+            else if (BBallscoreHandler.score >= 30 && BBallscoreHandler.score < 40)
+            {
+                banter.text = "That wasn't too shabby, hotshot! ";
+            }
+            else if (BBallscoreHandler.score >= 40 && BBallscoreHandler.score < 50)
+            {
+                banter.text = "I'll proudly call you a Hoosier!";
+            }
+            else if (BBallscoreHandler.score >= 50 && BBallscoreHandler.score < 60)
+            {
+                banter.text = "Wow! You lookin' to join the team?";
+            }
+            else if (BBallscoreHandler.score >= 60 && BBallscoreHandler.score < 70)
+            {
+                banter.text = "Look out! This player's on fire! ";
+            }
+            else if (BBallscoreHandler.score >= 70 && BBallscoreHandler.score < 80)
+            {
+                banter.text = "With skills like that, you'll go pro in no time!";
+            }
+            else if (BBallscoreHandler.score >= 80 && BBallscoreHandler.score < 90)
+            {
+                banter.text = "Spectacular! Outstanding! Some third thing!";
+            }
+            else if (BBallscoreHandler.score >= 90 && BBallscoreHandler.score < 100)
+            {
+                banter.text = "Yogi, is that you?";
+            }
+            else if (BBallscoreHandler.score >= 90 && BBallscoreHandler.score < 100)
+            {
+                banter.text = "That's it! I've seen it all! Time to retire!";
+            }
             foreach (GameObject ball in basketballs)
             {
                 Destroy(ball);

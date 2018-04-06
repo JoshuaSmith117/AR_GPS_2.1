@@ -29,7 +29,12 @@ public class UpdateGPSText : MonoBehaviour
         if (GPS.Instance.inAssemblyHall == true)
         {
             location.text = "Assembly Hall";
-        } else
+        }
+        else if (GPS.Instance.inMemorialStadium == true)
+        {
+            location.text = "Memorial Stadium";
+        }
+        else
         {
             location.text = "Unknown";
         }
